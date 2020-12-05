@@ -9,12 +9,11 @@ valid_passports = 0
 
 for passport in passports:
     kvs = passport.split()
-    keys = []
-    for kv in kvs:
-        k, v = kv.split(":")
-        keys.append(k)
+    print(kvs)
+    break
+    # {k: v for k, v in kvs.split(":")}
 
-    if not essential.difference(keys):
-        valid_passports += 1
+    # if not essential.difference(keys):
+    #     valid_passports += 1
 
 print(valid_passports)
