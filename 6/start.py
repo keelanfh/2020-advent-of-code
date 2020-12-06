@@ -8,9 +8,9 @@ with open("6/input.txt") as f:
 
 print(sum(len(set(x for x in g if x != "\n")) for g in groups))
 
-total = 0
-
 # Part 2
+
+total = 0
 
 for group in groups:
 
