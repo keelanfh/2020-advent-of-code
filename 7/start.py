@@ -17,16 +17,18 @@ with open("7/input.txt") as f:
             g.add_edge(" ".join(o_colour),
                        " ".join(i_colour), number=int(i_number))
 
-    # Part 1
+# Part 1
 
-    print(len(networkx.algorithms.dag.ancestors(g, "shiny gold")))
+print(len(networkx.algorithms.dag.ancestors(g, "shiny gold")))
 
-    # Part 2
+# Part 2
 
-    def total_bags_inside(bag: str) -> int:
-        if not (successors := g.successors(bag)):
-            return 0
-        return sum(g[bag][i_bag]["number"] * (1 + total_bags_inside(i_bag))
-                   for i_bag in successors)
 
-    print(total_bags_inside("shiny gold"))
+def total_bags_inside(bag: str) -> int:
+    if not (successors := g.successors(bag)):
+        return 0
+    return sum(g[bag][i_bag]["number"] * (1 + total_bags_inside(i_bag))
+               for i_bag in successors)
+
+
+print(total_bags_inside("shiny gold"))
