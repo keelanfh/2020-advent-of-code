@@ -1,6 +1,5 @@
-from copy import deepcopy
 from collections import namedtuple
-from typing import List
+from typing import Sequence
 
 CodeLine = namedtuple("CodeLine", ["op", "arg"])
 
