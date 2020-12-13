@@ -1,3 +1,5 @@
+import re
+
 with open("2/input.txt") as f:
 
     # Part 1
@@ -13,24 +15,19 @@ with open("2/input.txt") as f:
 
     print(valid)
 
-    # Part 2
+# Part 2
 
 with open("2/input.txt") as f:
 
-    import re
     valid = 0
 
     for line in f.readlines():
         rg, letter, password = line.split()
         letter = letter[0]
         fr, to = rg.split("-")
-        print(password, letter)
-        print(re.finditer(letter, password))
+        pos = [x.span()[1] for x in re.finditer(letter, password)]
 
-        break
+        if (int(fr) in pos) ^ (int(to) in pos):
+            valid += 1
 
-        if x := password.index(letter) == int(fr) - 1 or x == int(to) - 1:
-            if password.count(letter) == 1:
-                valid += 1
-
-                # print(valid)
+    print(valid)
