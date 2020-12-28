@@ -7,10 +7,11 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Execute a sum with operator and arguments
-func execute(op string, a int, b int) int {
+func executeSum(op string, a int, b int) int {
 	if op == "*" {
 		return a * b
 	} else if op == "+" {
@@ -25,23 +26,29 @@ func removeBrackets(expr string) string {
 	return re.ReplaceAllString(expr, `$1`)
 }
 
-// Use a supplied regex to match a particular sum in the expr
-// Evaluate that sum and then return the expr with that sum evaluated
-// The regex should follow something like
-// (_)(arg1)(op)(arg2)
-func doRegex(expr string, regex string) string {
+// Execute the leftmost sum in an expression
+// Supply operators as []string e.g. []string{`*`, `+`}
+// If nothing matches, will return expr
+func executeLeftmostSum(expr string, op []string) string {
+	opregex := strings.Join(op, `|\`)
+	regex := `^(.*?)(\d+)\s(\` + opregex + `)\s(\d+)(.*)$`
+
 	re := regexp.MustCompile(regex)
 	matches := re.FindStringSubmatch(expr)
 
 	if matches != nil {
+		// matches:
+		// [1]: string before sum
+		// [2]: first operand
+		// [3]: operator
+		// [4]: second operand
+		// [5]: string after sum
 
 		a, _ := strconv.Atoi(matches[2])
 		op := matches[3]
 		b, _ := strconv.Atoi(matches[4])
 
-		result := `${1}`
-		result += strconv.Itoa(execute(op, a, b))
-		result += `$5`
+		result := fmt.Sprintf(`${1}%d${5}`, executeSum(op, a, b))
 
 		return re.ReplaceAllString(expr, result)
 	}
@@ -50,30 +57,28 @@ func doRegex(expr string, regex string) string {
 }
 
 // Process an expression line with a given mode
-func processLine(expr string, mode int) string {
+func executeLine(expr string, mode int) string {
 	// Very simple behaviour in the first mode.
-	// This evaluates the leftmost sum that it can.
+	// This evaluates the leftmost sum that it can, matching * and +.
 	if mode == 1 {
-		expr = doRegex(expr, `^(.*?)(\d+)\s(\*|\+)\s(\d+)(.*)$`)
+		expr = executeLeftmostSum(expr, []string{`*`, `+`})
 	} else if mode == 2 {
 		// Look for brackets first
 		re := regexp.MustCompile(`^(.*)\((.*?)\)(.*)$`)
 		matches := re.FindStringSubmatch(expr)
 
-		// If you find a match, apply processLine recursively inside the brackets
-		if len(matches) == 4 {
-			expr = re.ReplaceAllString(expr, "${1}"+processLine(matches[2], 2)+"${3}")
+		// If you find a match, apply executeLine recursively inside the brackets
+		if matches != nil {
+			expr = re.ReplaceAllString(expr, "${1}"+executeLine(matches[2], 2)+"${3}")
 			// Otherwise, use the rules of precedence for operators
 			// Apply the addition one first as many times as you can
 			// Then the same for the multiplication one
 			// We can guarantee that there are no brackets in this section.
 		} else {
-			regexes := []string{`^(.*?)(\d+)\s(\+)\s(\d+)(.*)$`,
-				`^(.*?)(\d+)\s(\*)\s(\d+)(.*)$`}
 
-			for _, regex := range regexes {
+			for _, op := range [][]string{{`+`}, {`*`}} {
 				for {
-					newExpr := doRegex(expr, regex)
+					newExpr := executeLeftmostSum(expr, op)
 					if newExpr == expr {
 						expr = newExpr
 						break
@@ -106,14 +111,10 @@ func main() {
 		total := 0
 
 		for _, expr := range lines {
-			// Keep running processLine until you get to a number
+			// Keep running executeLine until you get to a number
 			result, err := strconv.Atoi(expr)
 			for err != nil {
-				newExpr := processLine(expr, mode)
-				if newExpr == expr {
-					break
-				}
-				expr = newExpr
+				expr = executeLine(expr, mode)
 				result, err = strconv.Atoi(expr)
 			}
 			total += result
