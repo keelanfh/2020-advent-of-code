@@ -43,32 +43,33 @@ func main() {
 		}
 	}
 
-	fmt.Println(rules)
-	fmt.Println(texts)
-
 	complete = make(map[int]bool)
 
 	j := 0
+	tot := 0
 	for {
 		newRules := make(map[int]string)
 		for i, rule := range rules {
-			re := regexp.MustCompile(`\d+`)
 			// If there are no numbers in the string, it is complete
+			re := regexp.MustCompile(`\d+`)
 			if !re.MatchString(rule) {
 				complete[i] = true
 			}
 			newRules[i] = re.ReplaceAllStringFunc(rule, replaceRule)
 		}
 		if reflect.DeepEqual(rules, newRules) {
+			// Only stop iterating if rules=newRules twice
+			// This stops us from running into issues where a rule hasn't been
+			// marked as complete before it is referred to
+			tot++
 			rules = newRules
-			fmt.Println(j)
-			break
+			if tot > 1 {
+				break
+			}
 		}
 		rules = newRules
 		j++
 	}
-
-	fmt.Println(rules[0])
 
 	newRules := make(map[int]string)
 	for i, rule := range rules {
@@ -85,6 +86,4 @@ func main() {
 	}
 
 	fmt.Println(total)
-	fmt.Println(rules[31])
-	fmt.Println(rules[42])
 }
