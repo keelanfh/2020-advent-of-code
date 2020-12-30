@@ -22,34 +22,34 @@ def find_route():
 
 print(find_route())
 
-# Part 2
+# # Part 2 - not working yet!
 
-print(routes_x)
+# print(routes_x)
 
-# print(509 - routes.index(509), 509)
+# # print(509 - routes.index(509), 509)
 
-routes_li = [route for index, route in enumerate(routes_x) if route]
+# routes_li = [route for index, route in enumerate(routes_x) if route]
 
-routes = [(index, route) for index, route in enumerate(routes_x) if route]
-routes.sort(key=lambda x: x[1])
-routes.reverse()
-print(routes)
-# routes = array(routes)
-
-
-def calculate():
-    for time in count(max(routes_li) - routes_li.index(max(routes_li)), max(routes_li)):
-        for index, route in routes:
-            # If it doesn't match
-            if (time + index) % route:
-                break
-            # Otherwise
-            else:
-                continue
-        else:
-            print(time)
-            break
-        print(time)
+# routes = [(index, route) for index, route in enumerate(routes_x) if route]
+# routes.sort(key=lambda x: x[1])
+# routes.reverse()
+# print(routes)
+# # routes = array(routes)
 
 
-print(timeit.timeit(calculate, number=5))
+# def calculate():
+#     for time in count(max(routes_li) - routes_li.index(max(routes_li)), max(routes_li)):
+#         for index, route in routes:
+#             # If it doesn't match
+#             if (time + index) % route:
+#                 break
+#             # Otherwise
+#             else:
+#                 continue
+#         else:
+#             print(time)
+#             break
+#         print(time)
+
+
+# print(timeit.timeit(calculate, number=5))
