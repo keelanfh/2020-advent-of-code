@@ -1,5 +1,6 @@
 from functools import reduce
 from pprint import pprint
+import operator
 
 field_range_dict = dict()
 
@@ -32,7 +33,7 @@ with open("16/input.txt") as f:
 
         else:
             line = line.strip()
-            if line == "":
+            if not line:
                 continue
             nearby_tickets.append([int(i) for i in line.split(",")])
 
@@ -45,45 +46,52 @@ for ticket in nearby_tickets:
         if value not in all_allowed:
             error_rate += value
 
+valid_tickets = [t for t in nearby_tickets if all(
+    value in all_allowed for value in t)]
+
+print(len(nearby_tickets))
+print(len(valid_tickets))
+
 print(error_rate)
 
 possible_fields = dict()
 used_fields = set()
 
-for ticket in nearby_tickets:
-    for i, value in enumerate(ticket):
-        # print()
-        # print(i, value)
-        # print(used_fields)
-        # print(possible_fields)
+print(valid_tickets)
+print()
+valid_tickets = [*zip(*valid_tickets)]
 
-        # If there is a dict in there for possible fields, which isn't 1, remove any used_fields from it, since they can't be used again.
-        if possible_fields.get(i):
-            if len(possible_fields[i]) != 1:
-                possible_fields[i] = {
-                    f for f in possible_fields[i] if f not in used_fields}
+possibles = field_range_dict.keys()
 
-            # In this case, there was an entry in possible_fields to begin with, so we set the entry to the intersection between that and the new ones
-            else:
-                possible_fields[i] = set(
-                    (field for field, allowed_values in field_range_dict.items() if value in allowed_values)).intersection(possible_fields[i])
+results = dict()
 
-            # Again, we add this to the used_fields if there is only one.
-            if len(possible_fields[i]) == 1:
-                used_fields |= possible_fields[i]
+for i, place in enumerate(valid_tickets):
+    results[i] = {*possibles}
+    bads = set()
+    for val in place:
+        for p in results[i]:
+            if val not in field_range_dict[p]:
+                bads.add(p)
+    for bad in bads:
+        results[i].remove(bad)
 
-        # Otherwise (entry in possible_fields is empty):
-        # check if the value is in the allowed values for all fields - if it is, add those fields to the entry.
+print(results)
+
+
+used_fields = []
+
+while True:
+    for k, v in results.items():
+        if len(v) > 1:
+            results[k] = {
+                f for f in results[k] if f not in used_fields}
         else:
-            possible_fields[i] = set(
-                (field for field, allowed_values in field_range_dict.items() if (value in allowed_values)))
-
-            # If there's only one possible field for that value, add that field to used_fields
-            if len(possible_fields[i]) == 1:
-                used_fields |= possible_fields[i]
-
-    # break
+            used_fields.append(next(iter(v)))
+    if all(len(v) == 1 for k, v in results.items()):
+        break
 
 
-for k, v in possible_fields.items():
-    print(k, len(v))
+results = [v.pop() for k, v in results.items()]
+results = [your_ticket[i]
+           for i, v in enumerate(results) if v.startswith("departure")]
+print(reduce(operator.mul, results))
