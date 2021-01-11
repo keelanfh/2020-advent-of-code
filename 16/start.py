@@ -52,14 +52,12 @@ valid_tickets = [t for t in nearby_tickets if all(
 results = dict()
 
 for i, place in enumerate(zip(*valid_tickets)):
-    results[i] = set(allowed_for_field.keys())
-    bads = set()
-    for val in place:
-        for p in results[i]:
-            if val not in allowed_for_field[p]:
-                bads.add(p)
-    for bad in bads:
-        results[i].remove(bad)
+    results[i] = {p
+                  for p in allowed_for_field
+                  if all(val in allowed_for_field[p]
+                         for val in place)
+                  }
+
 
 used_fields = []
 
@@ -68,10 +66,14 @@ while any(len(v) > 1 for v in results.values()):
         if len(v) == 1:
             used_fields.append(next(iter(v)))
         else:
-            results[k] = {f for f in results[k] if f not in used_fields}
+            results[k] = {f
+                          for f in results[k]
+                          if f not in used_fields}
 
 
-results = (v.pop() for v in results.values())
+results = (v.pop()
+           for v in results.values())
 results = [your_ticket[i]
-           for i, v in enumerate(results) if v.startswith("departure")]
+           for i, v in enumerate(results)
+           if v.startswith("departure")]
 print(reduce(int.__mul__, results))
