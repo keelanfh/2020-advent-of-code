@@ -46,8 +46,10 @@ print(error_rate)
 
 # Part 2
 
-valid_tickets = [t for t in nearby_tickets if all(
-    value in all_allowed for value in t)]
+valid_tickets = [t
+                 for t in nearby_tickets
+                 if all(value in all_allowed
+                        for value in t)]
 
 results = dict()
 
