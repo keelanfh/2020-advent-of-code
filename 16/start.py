@@ -10,10 +10,11 @@ with open("16/input.txt") as f:
         if yours:
             your_ticket = [int(i) for i in line.split(",")]
             yours = False
+
         elif "or" in line:
             field, ranges = line.split(": ")
-
             ranges = ranges.split(" or ")
+
             allowed_nums = set()
             for r in ranges:
                 fr, to = [int(i) for i in r.split("-")]
@@ -28,10 +29,8 @@ with open("16/input.txt") as f:
         elif line.startswith("nearby"):
             continue
 
-        else:
-            line = line.strip()
-            if line:
-                nearby_tickets.append([int(i) for i in line.split(",")])
+        elif line.strip():
+            nearby_tickets.append([int(i) for i in line.split(",")])
 
 all_allowed = reduce(set.union, allowed_for_field.values())
 
@@ -51,30 +50,29 @@ valid_tickets = [t
                  if all(value in all_allowed
                         for value in t)]
 
-results = dict()
+possible_fields = dict()
 
-for i, place in enumerate(zip(*valid_tickets)):
-    results[i] = {p
-                  for p in allowed_for_field
-                  if all(val in allowed_for_field[p]
-                         for val in place)
-                  }
+for pos, values_in_pos in enumerate(zip(*valid_tickets)):
+    possible_fields[pos] = {field_name
+                            for field_name in allowed_for_field
+                            if all(val in allowed_for_field[field_name]
+                                   for val in values_in_pos)}
 
 
 used_fields = []
 
-while any(len(v) > 1 for v in results.values()):
-    for k, v in results.items():
+while any(len(v) > 1 for v in possible_fields.values()):
+    for k, v in possible_fields.items():
         if len(v) == 1:
             used_fields.append(next(iter(v)))
         else:
-            results[k] = {f
-                          for f in results[k]
-                          if f not in used_fields}
+            possible_fields[k] = {f
+                                  for f in possible_fields[k]
+                                  if f not in used_fields}
 
-results = [your_ticket[i]
-           for i, v in enumerate(v.pop()
-                                 for v in results.values())
-           if v.startswith("departure")]
+your_ticket_values = [your_ticket[i]
+                      for i, v in enumerate(v.pop()
+                                            for v in possible_fields.values())
+                      if v.startswith("departure")]
 
-print(reduce(int.__mul__, results))
+print(reduce(int.__mul__, your_ticket_values))
