@@ -72,10 +72,9 @@ while any(len(v) > 1 for v in results.values()):
                           for f in results[k]
                           if f not in used_fields}
 
-
-results = (v.pop()
-           for v in results.values())
 results = [your_ticket[i]
-           for i, v in enumerate(results)
+           for i, v in enumerate(v.pop()
+                                 for v in results.values())
            if v.startswith("departure")]
+
 print(reduce(int.__mul__, results))
