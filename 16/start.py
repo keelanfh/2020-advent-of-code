@@ -15,13 +15,10 @@ with open("16/input.txt") as f:
             field, ranges = line.split(": ")
             ranges = ranges.split(" or ")
 
-            allowed_nums = set()
+            allowed_for_field[field] = set()
             for r in ranges:
-                fr, to = [int(i) for i in r.split("-")]
-                for n in range(fr, to+1):
-                    allowed_nums.add(n)
-
-            allowed_for_field[field] = allowed_nums
+                fr, to = (int(i) for i in r.split("-"))
+                allowed_for_field[field].update(n for n in range(fr, to+1))
 
         elif line.startswith("your"):
             yours = True
