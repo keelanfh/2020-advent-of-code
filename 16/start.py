@@ -42,10 +42,10 @@ print(error_rate)
 
 # Part 2
 
-valid_tickets = [t
+valid_tickets = (t
                  for t in nearby_tickets
                  if all(value in all_allowed
-                        for value in t)]
+                        for value in t))
 
 possible_fields = dict()
 
@@ -67,9 +67,9 @@ while any(len(v) > 1 for v in possible_fields.values()):
                                   for f in possible_fields[k]
                                   if f not in used_fields}
 
-your_ticket_values = [your_ticket[i]
+your_ticket_values = (your_ticket[i]
                       for i, v in enumerate(v.pop()
                                             for v in possible_fields.values())
-                      if v.startswith("departure")]
+                      if v.startswith("departure"))
 
 print(reduce(int.__mul__, your_ticket_values))
