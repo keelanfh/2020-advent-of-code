@@ -33,5 +33,4 @@ with open("21/input.txt") as f:
 
     print(",".join([x[1]
                     for x in sorted([(allergen, ingredient.pop())
-                                     for allergen, ingredient in allergens_to_ingredients.items()],
-                                    key=lambda x: x[0])]))
+                                     for allergen, ingredient in allergens_to_ingredients.items()])]))
