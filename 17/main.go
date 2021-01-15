@@ -178,8 +178,6 @@ func compute(iterations int, dimension int) int {
 	n = iterations*2 + len(lines)
 	p = iterations*2 + len(lines[0])
 
-	var actives int
-
 	if dimension == 3 {
 
 		grid := make3DGrid()
@@ -195,7 +193,7 @@ func compute(iterations int, dimension int) int {
 			grid = iterate3DGrid(grid)
 		}
 
-		actives = countCube(grid)
+		return countCube(grid)
 
 	} else if dimension == 4 {
 		grid := make4DGrid()
@@ -211,11 +209,13 @@ func compute(iterations int, dimension int) int {
 			grid = iterate4DGrid(grid)
 		}
 
+		actives := 0
 		for _, cube := range grid {
 			actives += countCube(cube)
 		}
+		return actives
 	}
-	return actives
+	return 0
 }
 
 func main() {

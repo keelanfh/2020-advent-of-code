@@ -59,19 +59,19 @@ with open("24/input.txt") as f:
 
     print(len(flipped_tiles))
 
-    x_dim, y_dim = [(min(x), max(x)) for x in zip(*flipped_tiles)]
+    x_dim, y_dim = [max(abs(min(x)), abs(max(x))) for x in zip(*flipped_tiles)]
 
     iterations = 100
 
-    width = (iterations + max(abs(x) for x in x_dim)) * 2
-    height = (iterations + max(abs(y) for y in y_dim)) * 2
+    width = (iterations + x_dim) * 2
+    height = (iterations + y_dim) * 2
 
-    floor = [[False for _ in range(width)] for _ in range(height)]
+    floor = [[white for _ in range(width)] for _ in range(height)]
 
     for x, y in flipped_tiles:
-        floor[iterations + y][iterations + x] = True
+        floor[iterations + y][iterations + x] = black
 
     for x in range(iterations):
         floor = run(floor)
 
-    print(sum(row.count(True) for row in floor))
+    print(sum(row.count(black) for row in floor))
