@@ -71,7 +71,7 @@ with open("24/input.txt") as f:
     for x, y in flipped_tiles:
         floor[iterations + y][iterations + x] = True
 
-    for x in range(100):
+    for x in range(iterations):
         floor = run(floor)
 
     print(sum(row.count(True) for row in floor))

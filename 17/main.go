@@ -37,7 +37,7 @@ func make4DGrid() [][][][]bool {
 }
 
 // Sum the 3D neighbours of a cube x,y,z in a grid
-func sum3DNeighbours(grid [][][]bool, x int, y int, z int) int {
+func sum3DNeighbours(grid [][][]bool, x, y, z int) int {
 	total := 0
 
 	for i := -1; i <= 1; i++ {
@@ -66,7 +66,7 @@ func sum3DNeighbours(grid [][][]bool, x int, y int, z int) int {
 }
 
 // Compute the 4D neighbours of a hypercube w,x,y,z in a grid
-func sum4DNeighbours(grid [][][][]bool, w int, x int, y int, z int) int {
+func sum4DNeighbours(grid [][][][]bool, w, x, y, z int) int {
 	total := 0
 
 	for h := -1; h <= 1; h++ {
@@ -141,6 +141,23 @@ func iterate4DGrid(grid [][][][]bool) [][][][]bool {
 	return newGrid
 }
 
+func countCube(cube [][][]bool) int {
+	actives := 0
+
+	for _, flat := range cube {
+		for _, row := range flat {
+			for _, char := range row {
+				if char {
+					actives++
+				}
+			}
+		}
+	}
+
+	return actives
+
+}
+
 func compute(iterations int, dimension int) int {
 
 	// File opening
@@ -157,7 +174,7 @@ func compute(iterations int, dimension int) int {
 
 	// Set up the right dimensions for the array
 	l = iterations*2 + 1
-	m = iterations*2 + 1
+	m = l
 	n = iterations*2 + len(lines)
 	p = iterations*2 + len(lines[0])
 
@@ -178,15 +195,8 @@ func compute(iterations int, dimension int) int {
 			grid = iterate3DGrid(grid)
 		}
 
-		for _, flat := range grid {
-			for _, row := range flat {
-				for _, char := range row {
-					if char {
-						actives++
-					}
-				}
-			}
-		}
+		actives = countCube(grid)
+
 	} else if dimension == 4 {
 		grid := make4DGrid()
 
@@ -202,15 +212,7 @@ func compute(iterations int, dimension int) int {
 		}
 
 		for _, cube := range grid {
-			for _, flat := range cube {
-				for _, row := range flat {
-					for _, char := range row {
-						if char {
-							actives++
-						}
-					}
-				}
-			}
+			actives += countCube(cube)
 		}
 	}
 	return actives
