@@ -6,7 +6,7 @@ with open("6/input.txt") as f:
 
 # Part 1
 
-print(sum(len(set(x for x in g if x != "\n")) for g in groups))
+print(sum(len({x for x in g if x != "\n"}) for g in groups))
 
 # Part 2
 

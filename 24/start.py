@@ -21,23 +21,22 @@ def black_neighbours(matrix, i, j):
     return neighbours.count(black)
 
 
+def empty_floor():
+    return [[white for _ in range(width)] for _ in range(height)]
+
+
 def run(matrix):
-    global width
-    global height
-    new_matrix = [[False for col in range(width)] for col in range(height)]
+    new_matrix = empty_floor()
     for i in range(height):
         for j in range(width):
             char = matrix[i][j]
             count = black_neighbours(matrix, i, j)
-            if char == black and count == 0 or count > 2:
+            if char == black and (count == 0 or count > 2):
                 new_matrix[i][j] = white
             elif char == white and count == 2:
                 new_matrix[i][j] = black
             else:
                 new_matrix[i][j] = char
-
-    if matrix == new_matrix:
-        raise RuntimeError
 
     return new_matrix
 
@@ -66,7 +65,7 @@ with open("24/input.txt") as f:
     width = (iterations + x_dim) * 2
     height = (iterations + y_dim) * 2
 
-    floor = [[white for _ in range(width)] for _ in range(height)]
+    floor = empty_floor()
 
     for x, y in flipped_tiles:
         floor[iterations + y][iterations + x] = black
